@@ -115,15 +115,32 @@ def add_review(request):
         return JsonResponse({"status": 403, "message": "Unauthorized"})
 
 
+# def get_dealer_reviews(request, dealer_id):
+#     # if dealer id has been provided
+#     if dealer_id:
+#         endpoint = "/fetchReviews/dealer/" + str(dealer_id)
+#         reviews = get_request(endpoint)
+#         for review_detail in reviews:
+#             response = analyze_review_sentiments(review_detail["review"])
+#             print(response)
+#             review_detail["sentiment"] = response["sentiment"]
+#         return JsonResponse({"status": 200, "reviews": reviews})
+#     else:
+#         return JsonResponse({"status": 400, "message": "Bad Request"})
 def get_dealer_reviews(request, dealer_id):
-    # if dealer id has been provided
+    # Check if dealer_id has been provided
     if dealer_id:
         endpoint = "/fetchReviews/dealer/" + str(dealer_id)
         reviews = get_request(endpoint)
         for review_detail in reviews:
-            response = analyze_review_sentiments(review_detail["review"])
-            print(response)
-            review_detail["sentiment"] = response["sentiment"]
+            response = analyze_review_sentiments(review_detail['review'])
+            if response is not None and 'sentiment' in response:
+                review_detail['sentiment'] = response['sentiment']
+            else:
+                # Handle cases where the sentiment analysis fails or returns None
+                review_detail['sentiment'] = 'unknown'
+                print("Warning: Sentiment analysis failed or returned None.")
+        
         return JsonResponse({"status": 200, "reviews": reviews})
     else:
         return JsonResponse({"status": 400, "message": "Bad Request"})
