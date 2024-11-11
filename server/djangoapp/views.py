@@ -137,10 +137,8 @@ def get_dealer_reviews(request, dealer_id):
             if response is not None and 'sentiment' in response:
                 review_detail['sentiment'] = response['sentiment']
             else:
-                # Handle cases where the sentiment analysis fails or returns None
                 review_detail['sentiment'] = 'unknown'
                 print("Warning: Sentiment analysis failed or returned None.")
-        
         return JsonResponse({"status": 200, "reviews": reviews})
     else:
         return JsonResponse({"status": 400, "message": "Bad Request"})
